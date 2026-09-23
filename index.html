@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리 반 게임 전시회</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Malgun Gothic",sans-serif;background:#f5f7fb;color:#202938}
+header{padding:55px 20px;text-align:center;color:white;background:linear-gradient(135deg,#596bdc,#8a6de5)}
+header h1{font-size:clamp(36px,7vw,60px);margin:8px 0;letter-spacing:-2px}header p{line-height:1.6}
+.container{width:min(1100px,calc(100% - 28px));margin:auto}.title{display:flex;justify-content:space-between;align-items:end;margin:35px 0 18px}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}.card{background:#fff;border:1px solid #e4e8f0;border-radius:20px;overflow:hidden;box-shadow:0 8px 25px #24304d12}
+.thumb{height:145px;background:#eef1ff;display:grid;place-items:center;font-size:70px}.info{padding:18px}.info h2{margin:0 0 7px}.author{color:#6d7789;font-size:14px}.desc{color:#596477;line-height:1.5;font-size:14px;min-height:43px;margin-top:10px}
+button{border:0;border-radius:12px;cursor:pointer;font-weight:800}.play{width:100%;padding:13px;margin-top:14px;background:#5669d9;color:#fff}
+.player{background:#fff;margin:28px 0 55px;padding:20px;border-radius:22px;box-shadow:0 10px 30px #24304d12}.player h2{margin:0}.player p{color:#69758a}
+.screen{position:relative;aspect-ratio:16/9;background:#111827;border-radius:16px;overflow:hidden}.screen iframe{width:100%;height:100%;border:0}.empty{height:100%;min-height:280px;display:grid;place-items:center;text-align:center;color:white;padding:30px}.empty div{font-size:55px}.empty p{color:#cbd5e1;line-height:1.6}code{background:#273449;padding:5px;border-radius:6px}
+.close{background:#fff;border:1px solid #dfe3eb;padding:9px 12px;margin:12px 0}
+@media(max-width:600px){.player{padding:13px}.title{align-items:start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+<div>🎮 초6 창작 게임 전시회</div>
+<h1>우리 반 게임 전시회</h1>
+<p>친구들이 직접 만든 엔트리 게임을 만나보세요.<br>작품을 선택하면 이 페이지에서 바로 플레이할 수 있습니다.</p>
+</header>
+<main class="container">
+<div class="title"><h2>🕹️ 전시 중인 게임</h2><span id="count"></span></div>
+<section class="games" id="games"></section>
+<section class="player">
+<h2 id="ptitle">🎮 게임을 선택해 주세요</h2>
+<p id="pdesc">위 작품의 「바로 플레이」를 누르면 게임이 여기에 나타납니다.</p>
+<button class="close" id="close">선택 해제</button>
+<div class="screen">
+<div class="empty" id="empty"><div><div>🕹️</div><strong>전시 작품을 선택해 주세요.</strong><p>엔트리 iframe 주소를 등록하면 이곳에서 바로 플레이됩니다.<br><code>https://playentry.org/iframe/작품ID</code></p></div></div>
+<iframe id="frame" allowfullscreen style="display:none" title="엔트리 게임"></iframe>
+</div>
+</section>
+</main>
+<script>
+/* ✏️ 선생님이 수정할 곳
+학생 작품을 추가하려면 아래 항목을 복사하세요.
+playUrl에는 엔트리의 iframe 주소를 넣습니다. */
+const games=[
+{title:"고양이의 모험",author:"김○○",icon:"🐱",description:"고양이가 장애물을 피해 보물을 찾아가는 게임입니다.",playUrl:""},
+{title:"우주 탈출",author:"이○○",icon:"🚀",description:"우주선을 움직여 소행성을 피하고 탈출해 보세요.",playUrl:""},
+{title:"미로 탈출",author:"박○○",icon:"🧩",description:"미로를 통과해 출구를 찾아가는 게임입니다.",playUrl:""},
+{title:"보물을 찾아라!",author:"최○○",icon:"💎",description:"여러 장애물을 해결하며 숨겨진 보물을 찾아보세요.",playUrl:""},
+{title:"좀비를 피해라",author:"정○○",icon:"🧟",description:"좀비를 피해 최대한 오래 살아남아 보세요.",playUrl:""},
+{title:"나만의 게임",author:"학생 이름",icon:"🎮",description:"내가 직접 만든 게임을 소개합니다.",playUrl:""}
+];
+const list=document.getElementById("games"),frame=document.getElementById("frame"),empty=document.getElementById("empty");
+document.getElementById("count").textContent="총 "+games.length+"개 작품";
+games.forEach((g,i)=>{
+ const c=document.createElement("article");c.className="card";
+ c.innerHTML=`<div class="thumb">${g.icon}</div><div class="info"><h2>${g.title}</h2><div class="author">👤 ${g.author}</div><div class="desc">${g.description}</div><button class="play">▶ 바로 플레이</button></div>`;
+ c.querySelector(".play").onclick=()=>play(i);list.appendChild(c);
+});
+function play(i){
+ const g=games[i];document.getElementById("ptitle").textContent="🎮 "+g.title;
+ document.getElementById("pdesc").textContent=g.author+"님의 작품 · "+g.description;
+ if(g.playUrl){frame.src=g.playUrl;frame.style.display="block";empty.style.display="none"}
+ else{frame.src="";frame.style.display="none";empty.style.display="grid";empty.querySelector("strong").textContent=g.title+"의 엔트리 주소를 아직 등록하지 않았습니다."}
+ document.querySelector(".player").scrollIntoView({behavior:"smooth"});
+}
+document.getElementById("close").onclick=()=>{frame.src="";frame.style.display="none";empty.style.display="grid";document.getElementById("ptitle").textContent="🎮 게임을 선택해 주세요";document.getElementById("pdesc").textContent="위 작품의 「바로 플레이」를 누르면 게임이 여기에 나타납니다."};
+</script>
+</body>
+</html>
